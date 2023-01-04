@@ -18,7 +18,7 @@ class DynamicField(models.TransientModel):
     _description = 'Import'
 
     file = fields.Binary('File')
-    number = fields.Integer('Number')
+    number = fields.Float('Number')
 
     def import_inv(self):
         buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
@@ -29,9 +29,8 @@ class DynamicField(models.TransientModel):
         invoice_name = 'new'
         count = 0
         product_template = False
-        product_id = []
-        product_id_3_list = []
         int_ref = False
+        prod_id = False
         for row_no in range(sheet.nrows):
             if row_no <= 0:
                 fields = map(lambda row: row.value.encode('utf-8'), sheet.row(row_no))
@@ -41,63 +40,25 @@ class DynamicField(models.TransientModel):
                         sheet.row(row_no)))
                 if line:
                     count += 1
-                    print("Line", count)
+                    print("Line No", count)
                     if line[0]:
-                        product_col = line[0]
-                        pro_id = product_col.split('_')
-                        product_int = int(pro_id[6])
-                        product_id = self.env['product.product'].search([('ext_id_map', '=', product_int)])
-                        print("PRODUCT ID", product_id)
-                        if product_id and line[10]:
-                            po_link_pro_id = line[10].split('_')
-                            po_link_pro_int = int(po_link_pro_id[6])
-                            if po_link_pro_int == 799:
-                                po_link_product_ids = self.env['res.partner'].browse(12495)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 783:
-                                po_link_product_ids = self.env['res.partner'].browse(12228)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 6092:
-                                po_link_product_ids = self.env['res.partner'].browse(12530)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 6162:
-                                po_link_product_ids = self.env['res.partner'].browse(13080)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 6129:
-                                po_link_product_ids = self.env['res.partner'].browse(13039)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 861:
-                                po_link_product_ids = self.env['res.partner'].browse(13201)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-
-                            elif po_link_pro_int == 826:
-                                po_link_product_ids = self.env['res.partner'].browse(12749)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 847:
-                                po_link_product_ids = self.env['res.partner'].browse(13010)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
-                            elif po_link_pro_int == 857:
-                                po_link_product_ids = self.env['res.partner'].browse(13120)
-                                print("PRODUCT PO ID", po_link_product_ids)
-                                if po_link_product_ids:
-                                    product_id.vendor_id = po_link_product_ids.id
+                        location_id = self.env['stock.location'].search([('name', 'ilike', line[0])])
+                        if location_id:
+                            product_id = self.env['product.product'].search([('ext_id_map', '=', int(line[1]))])
+                            uom_id = self.env['uom.uom'].search([('name', '=', line[4])])
+                            print("Uom", uom_id.name)
+                            stock_quant = self.env['stock.quant'].create({
+                                'location_id': location_id.id,
+                                'product_id': product_id.id,
+                                'inventory_quantity': float(line[3]),
+                                'product_uom_id': uom_id.id
+                            })
+                            stock_quant.action_apply_inventory()
 
     def run_the_code(self):
         if self.number:
-            self.env['ir.property'].sudo().search([('fields_id', '=', self.number)]).unlink()
+            # product = self.env['product.product'].browse(self.number)
+            query = "delete from stock_quant"
+            self.env.cr.execute(query)
+            # att = self.env['ir.attachment'].search([('res_model', '=', 'mrp.production'), ('res_id', '=', mrp.id)])
+            # print("\n Attachment: ", att)
