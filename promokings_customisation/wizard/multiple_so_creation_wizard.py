@@ -93,6 +93,12 @@ class MultipleSOCreationWizard(models.TransientModel):
                 })
                 order_id.button_quotation_confirm()
                 order_id.action_confirm()
+                if order_id.picking_ids:
+                    source_location_id = self.env['stock.location'].search(
+                        [('name', 'ilike', 'Finished Goods Store'), ('usage', '=', 'internal'), ('company_id', '=', self.env.company.id)], limit=1)
+                    for picking in order_id.picking_ids:
+                        if picking.picking_type_code == 'outgoing':
+                            picking.location_id = source_location_id.id
                 order_id.state = 'quotation_confirmed'
 
             if order_id:
