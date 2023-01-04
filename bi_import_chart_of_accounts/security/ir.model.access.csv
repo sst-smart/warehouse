@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_import_chart_account,access_import_chart_account,model_import_chart_account,,1,1,1,0
+access_import_mo,access_import_mo,model_import_mo,,1,1,1,0
+access_import_contact,access_import_contact,model_import_contact,,1,1,1,0
