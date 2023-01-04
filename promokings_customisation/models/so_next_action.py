@@ -2,7 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, date
 
 
 class SONextAction(models.Model):
@@ -69,10 +69,13 @@ class SONextAction(models.Model):
                     [('name', 'ilike', 'Ready Goods Stock'), ('usage', '=', 'internal'), ('company_id', '=', self.env.company.id)], limit=1)
                 lines = [(5, 0, 0)]
                 for filter_normal_line_id in filter_normal_line_ids:
+                    line_product = filter_normal_line_id.product_id
+                    line_link_product = self.env['product.product'].sudo().search(
+                            [('po_link_product_id', '=', line_product.id)], limit=1)
                     line = (0, 0, {
                         'name': '/',
-                        'product_id': filter_normal_line_id.product_id.id,
-                        'product_uom': filter_normal_line_id.product_id.uom_id.id,
+                        'product_id': line_link_product.id or line_product.id,
+                        'product_uom': line_link_product.uom_id.id or line_product.uom_id.id,
                         'product_uom_qty': filter_normal_line_id.qty_to_next_action,
                         'location_id': ready_good_location.id,
                         'location_dest_id': finished_good_location.id,
@@ -91,6 +94,17 @@ class SONextAction(models.Model):
                     'move_lines': lines,
                 })
                 pick_output.action_confirm()
+
+                self.env['mail.activity'].sudo().create({
+                    'res_model_id': self.env['ir.model']._get_id('stock.picking'),
+                    'res_id': pick_output.id,
+                    'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                    'date_deadline': date.today(),
+                    'user_id': pick_output.user_id.id or self.env.user.id,
+                    'summary': "Pick created for internal transfer",
+                    'note': "Pick created for internal transfer",
+                })
+
                 self.sale_order_id.picking_ids = [(4, pick_output.id)]
                 filter_normal_line_ids.picking_id = pick_output.id
                 filter_normal_line_ids.next_action_done = True
@@ -350,18 +364,29 @@ class SONextActionLine(models.Model):
     @api.onchange('product_id', 'next_action')
     def onchange_next_action(self):
         product_list = []
+        all_products = self.env['product.product'].search([])
         if self.product_id:
             if self.next_action:
                 if self.next_action == 'manufacture':
                     product_to_link_in_mo = self.env['product.product'].sudo().search(
                         [('mo_link_product_id', '=', self.product_id.id)])
-                    product_list = product_to_link_in_mo.ids or []
+                    if product_to_link_in_mo:
+                        product_list = product_to_link_in_mo.ids
+                    else:
+                        product_list = all_products.ids
                 elif self.next_action == 'buy':
                     product_to_link_in_po = self.env['product.product'].sudo().search(
                         [('po_link_product_id', '=', self.product_id.id)])
-                    product_list = product_to_link_in_po.ids or []
+                    if product_to_link_in_po:
+                        product_list = product_to_link_in_po.ids
+                    else:
+                        product_list = all_products.ids
             else:
-                product_list = self.env['product.product'].search(['|', ('po_link_product_id', '=', self.product_id.id), ('mo_link_product_id', '=', self.product_id.id)]).ids
+                product_po_mo = self.env['product.product'].search(['|', ('po_link_product_id', '=', self.product_id.id), ('mo_link_product_id', '=', self.product_id.id)])
+                if product_po_mo:
+                    product_list = product_po_mo.ids
+                else:
+                    product_list = all_products.ids
         domain = {'domain': {'linked_product_id': [('id', 'in', product_list)]}}
         return domain
 

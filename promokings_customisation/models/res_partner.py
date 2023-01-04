@@ -15,7 +15,7 @@ class ResPartner(models.Model):
 
     vendor_code = fields.Char('Vendor Code')
     is_contact_admin = fields.Boolean(compute=_check_is_contact_admin, readonly=True)
-    ext_partner_id = fields.Integer("Ext ID")
+    # ext_partner_id = fields.Integer("Ext ID")
 
     @api.model
     def default_get(self, fields):
