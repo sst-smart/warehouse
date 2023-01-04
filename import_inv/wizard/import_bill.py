@@ -56,9 +56,10 @@ class DynamicField(models.TransientModel):
                             stock_quant.action_apply_inventory()
 
     def run_the_code(self):
-        if self.number:
-            # product = self.env['product.product'].browse(self.number)
-            query = "delete from stock_quant"
-            self.env.cr.execute(query)
-            # att = self.env['ir.attachment'].search([('res_model', '=', 'mrp.production'), ('res_id', '=', mrp.id)])
-            # print("\n Attachment: ", att)
+        # query = "select * from stock_quant"
+        # self.env.cr.execute(query)
+        # data = self.env.cr.fetchall()
+        # print("data", data)
+        date = datetime.datetime(2022, 12, 31)
+        all_stock = self.env['stock.quant'].search([])
+        all_stock.inventory_date = date
