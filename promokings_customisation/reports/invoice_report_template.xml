@@ -200,7 +200,6 @@
     </template>
 
 
-
     <template id="report_external_layout_bold_promo_kings" inherit_id="web.external_layout_bold">
         <xpath expr="//div[hasclass('row')]/div[1]" position="replace">
             <div class="col-5 offset-1" name="company_address">
