@@ -70,12 +70,13 @@ class SONextAction(models.Model):
                 lines = [(5, 0, 0)]
                 for filter_normal_line_id in filter_normal_line_ids:
                     line_product = filter_normal_line_id.product_id
+                    linked_product = filter_normal_line_id.linked_product_id
                     line_link_product = self.env['product.product'].sudo().search(
                             [('po_link_product_id', '=', line_product.id)], limit=1)
                     line = (0, 0, {
                         'name': '/',
-                        'product_id': line_link_product.id or line_product.id,
-                        'product_uom': line_link_product.uom_id.id or line_product.uom_id.id,
+                        'product_id': linked_product.id or line_product.id,
+                        'product_uom': linked_product.uom_id.id or line_product.uom_id.id,
                         'product_uom_qty': filter_normal_line_id.qty_to_next_action,
                         'location_id': ready_good_location.id,
                         'location_dest_id': finished_good_location.id,
