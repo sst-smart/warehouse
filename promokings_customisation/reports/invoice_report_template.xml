@@ -123,6 +123,24 @@
     </template>
 
 
+<!--Inheriting sale report invoice-->
+    <template id="report_invoice_document_inherit_sale_inherit" inherit_id="sale.report_invoice_document_inherit_sale">
+        <xpath expr="//t[@t-if='o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)']" position="replace">
+            <t t-if="o.partner_shipping_id">
+                <t t-set="information_block">
+                    <div groups="sale.group_delivery_invoice_address" name="shipping_address_block">
+                        <strong>Shipping Address:</strong>
+                        <div t-field="o.partner_shipping_id"
+                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                    </div>
+                </t>
+            </t>
+            <div t-field="o.partner_id"
+                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' groups="sale.group_delivery_invoice_address"/>
+        </xpath>
+    </template>
+    
+
     <template id="document_tax_totals_inherit" inherit_id="account.document_tax_totals">
 
         <xpath expr="//tr[hasclass('o_subtotal')]" position="replace">
