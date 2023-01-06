@@ -32,26 +32,26 @@ class StockPicking(models.Model):
                 self.partner_id = False
                 self.sale_order_id = False
 
-    def button_validate(self):
-        for line in self.move_ids_without_package:
-            if line.sale_line_id:
-                # if line.sale_line_id.next_action == 'buy':
-                purchase_line_id = self.env['purchase.order.line'].search(
-                    [('sale_line_id', '=', line.sale_line_id.id),
-                     ('product_id', '=', line.product_id.id)])
-                if purchase_line_id:
-                    # if purchase_line_id.qty_received < line.quantity_done:
-                    if sum(purchase_line_id.mapped('qty_received')) < line.quantity_done:
-                        raise UserError(_('Stock is not available for product %s') % line.product_id.name)
-
-                # if line.sale_line_id.next_action == 'manufacture':
-                production_id = self.env['mrp.production'].search([('origin', '=', line.sale_line_id.order_id.name),
-                                                                   ('product_id', '=', line.product_id.id)],
-                                                                  limit=1)
-                if production_id:
-                    if production_id.qty_produced < line.quantity_done:
-                        raise UserError(_('Stock is not available for product %s') % line.product_id.name)
-        return super(StockPicking, self).button_validate()
+    # def button_validate(self):
+    #     for line in self.move_ids_without_package:
+    #         if line.sale_line_id:
+    #             # if line.sale_line_id.next_action == 'buy':
+    #             purchase_line_id = self.env['purchase.order.line'].search(
+    #                 [('sale_line_id', '=', line.sale_line_id.id),
+    #                  ('product_id', '=', line.product_id.id)])
+    #             if purchase_line_id:
+    #                 # if purchase_line_id.qty_received < line.quantity_done:
+    #                 if sum(purchase_line_id.mapped('qty_received')) < line.quantity_done:
+    #                     raise UserError(_('Stock is not available for product %s') % line.product_id.name)
+    #
+    #             # if line.sale_line_id.next_action == 'manufacture':
+    #             production_id = self.env['mrp.production'].search([('origin', '=', line.sale_line_id.order_id.name),
+    #                                                                ('product_id', '=', line.product_id.id)],
+    #                                                               limit=1)
+    #             if production_id:
+    #                 if production_id.qty_produced < line.quantity_done:
+    #                     raise UserError(_('Stock is not available for product %s') % line.product_id.name)
+    #     return super(StockPicking, self).button_validate()
 
     def _action_done(self):
         """
