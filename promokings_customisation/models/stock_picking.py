@@ -126,14 +126,14 @@ class StockQuantPackageInherit(models.Model):
 class StockQuantInherit(models.Model):
     _inherit = 'stock.quant'
 
-    value = fields.Many2many('product.attribute.value', compute="_compute_attribute_value", string="Attribute")
+    att_value = fields.Many2many('product.attribute.value', compute="_compute_attribute_value", string="Attribute")
 
     def _compute_attribute_value(self):
 
         if self.product_id and self.product_id.product_template_variant_value_ids:
-            self.value = self.product_id.product_template_variant_value_ids.product_attribute_value_id
+            self.att_value = self.product_id.product_template_variant_value_ids.product_attribute_value_id
         else:
-            self.value = False
+            self.att_value = False
 
     @api.model
     def create(self, vals):
