@@ -54,23 +54,35 @@ class StockPicking(models.Model):
         return super(StockPicking, self).button_validate()
 
     def _action_done(self):
+        """
+        Super the action done function for create the stock quant for finished goods,
+        remove the same from ready goods location
+        """
         res = super(StockPicking, self)._action_done()
-        finished_good_location = self.env['stock.location'].search(
-            [('name', 'ilike', 'Finished Goods Store'), ('usage', '=', 'internal'), ('company_id', '=', self.env.company.id)], limit=1)
-        if self.sale_id:
-            next_action = self.sale_id.next_action_ids.next_action_line_ids
-            if self.picking_type_code == 'internal' and self.move_line_ids_without_package:
-                for move_line in self.move_line_ids_without_package:
-                    next_action_filter = next_action.filtered(lambda x: move_line.product_id.id in x.mapped('linked_product_id.id'))
-                    for action_line in next_action_filter:
-                        if move_line.product_id == action_line.linked_product_id:
-                            stock_quant = self.env['stock.quant'].create({
-                                'location_id': finished_good_location.id,
-                                'product_id': action_line.product_id.id,
-                                'inventory_quantity': move_line.qty_done,
-                                'product_uom_id': action_line.product_id.uom_id.id
-                            })
-                            stock_quant.action_apply_inventory()
+        for record in self:
+            if record.sale_id:
+                next_action = record.sale_id.next_action_ids.next_action_line_ids
+                if record.picking_type_code == 'internal' and record.move_line_ids_without_package:
+                    for move_line in record.move_line_ids_without_package:
+                        next_action_filter = next_action.filtered(lambda x: move_line.product_id.id in x.mapped('linked_product_id.id'))
+                        if next_action_filter:
+                            for action_line in next_action_filter:
+                                if move_line.product_id == action_line.linked_product_id:
+                                    stock_quant = self.env['stock.quant'].create({
+                                        'location_id': record.location_dest_id.id,
+                                        'product_id': action_line.product_id.id,
+                                        'inventory_quantity': move_line.qty_done,
+                                        'product_uom_id': action_line.product_id.uom_id.id
+                                    })
+                                    stock_quant.action_apply_inventory()
+                                    current_quant = self.env['stock.quant'].search([('location_id', '=', record.location_dest_id.id),
+                                                                                    ('product_id', '=', move_line.product_id.id),
+                                                                                    ('quantity', '=', move_line.qty_done)], limit=1)
+                                    current_quant.update({
+                                        'inventory_quantity': 0
+                                    })
+                                    current_quant.action_apply_inventory()
+
         return res
 
     def action_confirm(self):
