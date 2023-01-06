@@ -61,7 +61,7 @@ class StockPicking(models.Model):
         res = super(StockPicking, self)._action_done()
         for record in self:
             if record.sale_id:
-                next_action = record.sale_id.next_action_ids.next_action_line_ids
+                next_action = record.sale_id.sudo().next_action_ids.next_action_line_ids
                 if record.picking_type_code == 'internal' and record.move_line_ids_without_package:
                     for move_line in record.move_line_ids_without_package:
                         next_action_filter = next_action.filtered(lambda x: move_line.product_id.id in x.mapped('linked_product_id.id'))
