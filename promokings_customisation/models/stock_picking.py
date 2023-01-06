@@ -62,7 +62,8 @@ class StockPicking(models.Model):
         for record in self:
             if record.sale_id:
                 next_action = record.sale_id.sudo().next_action_ids.next_action_line_ids
-                if record.picking_type_code == 'internal' and record.move_line_ids_without_package:
+                picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal')], limit=1)
+                if record.picking_type_id == picking_type.id and record.move_line_ids_without_package:
                     for move_line in record.move_line_ids_without_package:
                         next_action_filter = next_action.filtered(lambda x: move_line.product_id.id in x.mapped('linked_product_id.id'))
                         if next_action_filter:
