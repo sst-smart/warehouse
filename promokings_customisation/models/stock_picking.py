@@ -32,17 +32,17 @@ class StockPicking(models.Model):
                 self.partner_id = False
                 self.sale_order_id = False
 
-    def action_assign(self):
-        for line in self.move_ids_without_package:
-            stock_quant = self.env['stock.quant'].create({
-                'location_id': line.location_id.id,
-                'product_id': line.product_id.id,
-                'inventory_quantity': line.quantity_done,
-                'product_uom_id': line.product_id.uom_id.id
-            })
-            stock_quant.action_apply_inventory()
-
-        return super(StockPicking, self).action_assign()
+    # def do_unreserve(self):
+    #     for line in self.move_ids_without_package:
+    #         stock_quant = self.env['stock.quant'].create({
+    #             'location_id': line.location_id.id,
+    #             'product_id': line.product_id.id,
+    #             'inventory_quantity': line.quantity_done,
+    #             'product_uom_id': line.product_id.uom_id.id
+    #         })
+    #         stock_quant.action_apply_inventory()
+    #
+    #     return super(StockPicking, self).do_unreserve()
 
     # def button_validate(self):
     #     for line in self.move_ids_without_package:
