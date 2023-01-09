@@ -36,7 +36,7 @@
                                    force_save="1" optional="hide"/>
                             <field name="partner_id"
                                    attrs="{'invisible': [('next_action', '!=', 'buy')], 'readonly': ['|', ('next_action', '!=', 'buy'), ('next_action_done', '=', True)], 'required': [('next_action', '=', 'buy')]}"/>
-                            <field name="linked_product_id" attrs="{'required': [('next_action', '!=', False)], 'readonly': [('next_action_done', '=', True)]}"/>
+                            <field name="linked_product_id" attrs="{'required': [('next_action', '!=', False)], 'readonly': [('next_action_done', '=', True)]}" domain="[('categ_id', '!=', 446)]"/>
                             <field name="qty_ordered" readonly="1" force_save="1"/>
                             <field name="qty_to_do" readonly="1" force_save="1"/>
                             <field name="qty_to_next_action" attrs="{'readonly': [('next_action_done', '=', True)]}"/>

@@ -337,6 +337,10 @@ class SONextActionLine(models.Model):
     _name = 'so.next.action.line'
     _description = 'Sale Order Next Action Plan Line'
 
+    # def _get_linked_product_domain(self):
+    #     charge_product_ids = self.env['product.product'].search([('categ_id', '=', 446)])
+    #     return [('id', 'not in', charge_product_ids.ids)]
+
     product_id = fields.Many2one('product.product', string="Product")
     qty_ordered = fields.Float(string='Quantity Ordered', digits='Product Unit of Measure')
     qty_to_do = fields.Float(string='Quantity To Do', digits='Product Unit of Measure')
@@ -362,8 +366,9 @@ class SONextActionLine(models.Model):
     purchase_order_id = fields.Many2one('purchase.order', string="Purchase Order")
     linked_product_id = fields.Many2one('product.product', string="Linked Products")
 
-    @api.onchange('product_id', 'next_action')
+    @api.onchange('product_id', 'next_action', 'linked_product_id')
     def onchange_next_action(self):
+        print("getting")
         product_list = []
         all_products = self.env['product.product'].search([])
         if self.product_id:
@@ -388,7 +393,7 @@ class SONextActionLine(models.Model):
                     product_list = product_po_mo.ids
                 else:
                     product_list = all_products.ids
-        domain = {'domain': {'linked_product_id': [('id', 'in', product_list)]}}
+        domain = {'domain': {'linked_product_id': [('id', 'in', product_list), ('categ_id', '!=', 446)]}}
         return domain
 
     @api.onchange('product_id')

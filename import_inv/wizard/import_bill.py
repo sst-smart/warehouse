@@ -88,8 +88,16 @@ class DynamicField(models.TransientModel):
         #     pick_output.action_confirm()
         #     pick_output.group_id = 109
         #     mrp.picking_ids = [(4, pick_output.id)]
-        if self.number:
-            sale_orders = self.env['sale.order'].search([('parent_so_id', '!=', False), ('state', '=', 'quotation_confirmed')])
-            sale_orders.state = 'sale'
-            # for sale_order in sale_orders:
+        if self.number == 1:
+            # sale_orders = self.env['sale.order'].search([('parent_so_id', '!=', False), ('state', '=', 'quotation_confirmed')])
+            # sale_orders.state = 'sale'
+            all_products = self.env['product.template'].search([('invoice_policy', '=', 'order')])
+            all_products.invoice_policy = 'delivery'
+
+        if self.number == 2:
+            mrp = self.env['mrp.production'].search([('state', '=', 'draft')])
+            for order in mrp:
+                location = self.env['stock.location'].sudo().browse(17)
+                if order.location_src_id == location:
+                    order.location_src_id = 22
 

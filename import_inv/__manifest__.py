@@ -2,7 +2,7 @@
 
 {
     'name': 'Import Inv',
-    'version': '14.0.1.0.5',
+    'version': '14.0.1.0.6',
     'summary': """Import Inv""",
     'description': """Import Inv""",
     'category': 'Sales',

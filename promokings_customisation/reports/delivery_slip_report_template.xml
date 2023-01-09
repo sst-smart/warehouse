@@ -48,6 +48,7 @@
                 </tbody>
             </table>
         </xpath>
+
         <xpath expr="//div[@name='div_sched_date']" position="after">
             <div t-if="o.partner_id" class="col-auto" name="div_customer">
                 <strong>Customer:</strong>
@@ -60,7 +61,7 @@
         </xpath>
         <xpath expr="//span[@t-field='bo_line.product_uom']" position="after">
             <t t-set="bo_line_total_qty" t-value="bo_line_total_qty + bo_line.product_uom_qty"/>
-            <t t-set="bo_line_uom" t-value="bo_line.product_uom"/>
+            <t t-set="bo_line_uom" t-value="bo_line.product_uom.name"/>
         </xpath>
         <xpath expr="//div[@name='signature']" position="after">
             <table name="total_qty_summary" class="table table-sm float-right" style="width:48.25%;">
@@ -103,11 +104,12 @@
         <xpath expr="//td[@name='move_line_aggregated_qty_ordered']" position="inside">
             <t t-set="move_total_qty" t-value="move_total_qty + aggregated_lines[line]['qty_ordered']"/>
             <t t-set="move_uom" t-value="aggregated_lines[line]['product_uom']"/>
-            <t t-esc="move_total_qty"/>
+<!--            <t t-esc="move_total_qty"/>-->
         </xpath>
         <xpath expr="//td[@name='move_line_aggregated_qty_done']" position="inside">
             <t t-set="move_total_qty_done" t-value="move_total_qty_done + aggregated_lines[line]['qty_done']"/>
             <t t-set="move_uom" t-value="aggregated_lines[line]['product_uom']"/>
+<!--            <t t-esc="move_total_qty_done"/>-->
         </xpath>
     </template>
 </odoo>
