@@ -99,7 +99,7 @@ class MultipleSOCreationWizard(models.TransientModel):
                     for picking in order_id.picking_ids:
                         if picking.picking_type_code == 'outgoing':
                             picking.location_id = source_location_id.id
-                order_id.state = 'quotation_confirmed'
+                order_id.action_unlock()
 
             if order_id:
                 next_action_id = self.env['so.next.action'].sudo().create({

@@ -56,8 +56,8 @@ class DynamicField(models.TransientModel):
                             stock_quant.action_apply_inventory()
 
     def run_the_code(self):
-        invoice = self.env['account.move'].browse(2)
-        invoice.picking_ids = [(4, 265)]
+        # invoice = self.env['account.move'].browse(2)
+        # invoice.picking_ids = [(4, 265)]
         # query = "select * from stock_quant"
         # self.env.cr.execute(query)
         # data = self.env.cr.fetchall()
@@ -65,26 +65,31 @@ class DynamicField(models.TransientModel):
         # date = datetime.datetime(2022, 12, 31)
         # all_stock = self.env['stock.quant'].search([])
         # all_stock.inventory_date = date
+        # if self.number:
+        #     mrp = self.env['mrp.production'].browse(int(self.number))
+        #     pick_output = self.env['stock.picking'].create({
+        #         'name': '/',
+        #         'partner_id': False,
+        #         'scheduled_date': mrp.date_planned_start,
+        #         'sale_id': mrp.sale_order_id.id,
+        #         'picking_type_id': 7,
+        #         'location_id': 8,
+        #         'location_dest_id': 22,
+        #         'origin': mrp.name,
+        #         'move_lines': [(5, 0, 0), (0, 0, {
+        #                     'name': '/',
+        #                     'product_id': mrp.move_raw_ids[0].product_id.id,
+        #                     'product_uom': mrp.move_raw_ids[0].product_id.uom_id.id,
+        #                     'product_uom_qty': 100,
+        #                     'location_id': 8,
+        #                     'location_dest_id': 22,
+        #                 })]
+        #     })
+        #     pick_output.action_confirm()
+        #     pick_output.group_id = 109
+        #     mrp.picking_ids = [(4, pick_output.id)]
         if self.number:
-            mrp = self.env['mrp.production'].browse(int(self.number))
-            pick_output = self.env['stock.picking'].create({
-                'name': '/',
-                'partner_id': False,
-                'scheduled_date': mrp.date_planned_start,
-                'sale_id': mrp.sale_order_id.id,
-                'picking_type_id': 7,
-                'location_id': 8,
-                'location_dest_id': 22,
-                'origin': mrp.name,
-                'move_lines': [(5, 0, 0), (0, 0, {
-                            'name': '/',
-                            'product_id': mrp.move_raw_ids[0].product_id.id,
-                            'product_uom': mrp.move_raw_ids[0].product_id.uom_id.id,
-                            'product_uom_qty': 100,
-                            'location_id': 8,
-                            'location_dest_id': 22,
-                        })]
-            })
-            pick_output.action_confirm()
-            pick_output.group_id = 109
-            mrp.picking_ids = [(4, pick_output.id)]
+            sale_orders = self.env['sale.order'].search([('parent_so_id', '!=', False), ('state', '=', 'quotation_confirmed')])
+            sale_orders.state = 'sale'
+            # for sale_order in sale_orders:
+
