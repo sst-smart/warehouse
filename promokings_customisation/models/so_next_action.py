@@ -132,7 +132,10 @@ class SONextAction(models.Model):
                         #     [('po_link_product_id', '=', po_line.product_id.id), ('vendor_id', '=', partner.id)])
                         product_to_link_in_po = self.env['product.product'].sudo().search(
                             [('po_link_product_id', '=', po_line.product_id.id)])
-                        if not product_to_link_in_po:
+                        category = self.env['product.category'].browse(446)
+                        charge_product_to_link_in_po = self.env['product.product'].sudo().search(
+                            [('po_link_product_id', '=', po_line.linked_product_id.id), ('categ_id', '=', category.id)])
+                        if not product_to_link_in_po and not charge_product_to_link_in_po:
                             raise ValidationError(_("Please Check the product is exist on po linked product."))
                         so_line_to_link_in_po = self.sale_order_id.order_line.filtered(
                             lambda l: l.product_id.id == po_line.product_id.id)

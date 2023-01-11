@@ -17,6 +17,14 @@
             <xpath expr="//field[@name='move_ids_without_package']//tree//field[@name='product_packaging_id']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
+            <xpath expr="//header" position="inside">
+                <button string="Inventory Adjustment" class="btn btn-secondary"
+                            type="object" name="action_update_inventory_adjustment"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'waiting', 'confirmed'])]}"/>
+                <button string="Change Product Location" class="btn btn-secondary"
+                            type="object" name="change_pre_production_location"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'waiting', 'confirmed'])]}"/>
+            </xpath>
 
         </field>
     </record>

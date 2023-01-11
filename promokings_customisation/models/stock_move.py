@@ -20,6 +20,7 @@ class StockMove(models.Model):
                         ['|', ('categ_id', 'in', ready_goods_categ.child_id.ids),
                          ('categ_id', 'in', ready_goods_categ.ids)]):
                     ready_product_list.append(ready_product.id)
+                print("ready goods", ready_product_list)
                 domain = {'domain': {'product_id': [('id', 'in', ready_product_list)]}}
                 return domain
 
@@ -29,8 +30,11 @@ class StockMove(models.Model):
                     ['|', ('categ_id', 'in', raw_materials_categ.child_id.ids),
                      ('categ_id', 'in', raw_materials_categ.ids)]):
                 raw_product_list.append(raw_product.id)
+            print("ready goods", raw_product_list)
+
             domain = {'domain': {'product_id': [('id', 'in', raw_product_list)]}}
             return domain
+
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
