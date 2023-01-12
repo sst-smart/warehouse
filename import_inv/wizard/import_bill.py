@@ -97,7 +97,16 @@ class DynamicField(models.TransientModel):
         if self.number == 2:
             mrp = self.env['mrp.production'].search([('state', '=', 'draft')])
             for order in mrp:
-                location = self.env['stock.location'].sudo().browse(17)
+                location = self.env['stock.location'].sudo().browse(22)
                 if order.location_src_id == location:
-                    order.location_src_id = 22
+                    order.location_src_id = 17
+                if order.move_raw_ids:
+                    for move_raw in order.move_raw_ids:
+                        if move_raw.location_id == location:
+                            move_raw.location_id = 17
 
+        if self.number == 3:
+            # mrp_id = self.env['mrp.production'].sudo().search([('state', '=', )])
+            mrp = self.env['mrp.production'].browse(351)
+
+            print("mrp", mrp.read())
