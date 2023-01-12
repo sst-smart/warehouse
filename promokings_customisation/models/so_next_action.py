@@ -195,6 +195,7 @@ class SONextAction(models.Model):
                         'partner_id': self.sale_order_id.partner_id.id,
                         'sale_order_id': self.sale_order_id.id,
                         'customisation_details': mo_line.customisation_details,
+                        'customisation_type_ids': mo_line.customisation_type_ids.ids,
                         'picking_type_id': mrp_picking_type_id.id,
                         'location_src_id': mrp_picking_type_id.default_location_src_id.id,
                         'location_dest_id': mrp_picking_type_id.default_location_dest_id.id,
@@ -278,6 +279,7 @@ class SONextAction(models.Model):
                             'partner_id': self.sale_order_id.partner_id.id,
                             'sale_order_id': self.sale_order_id.id,
                             'customisation_details': cust_mo_line.customisation_details,
+                            'customisation_type_ids': cust_mo_line.customisation_type_ids.ids,
                             'picking_type_id': mrp_picking_type_id.id,
                             'location_src_id': mrp_picking_type_id.default_location_src_id.id,
                             'location_dest_id': mrp_picking_type_id.default_location_dest_id.id,
@@ -371,7 +373,6 @@ class SONextActionLine(models.Model):
 
     @api.onchange('product_id', 'next_action', 'linked_product_id')
     def onchange_next_action(self):
-        print("getting")
         product_list = []
         all_products = self.env['product.product'].search([])
         if self.product_id:

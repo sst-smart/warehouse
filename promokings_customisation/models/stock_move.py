@@ -15,22 +15,20 @@ class StockMove(models.Model):
         if self.raw_material_production_id:
             if self.raw_material_production_id.branding_mo:
                 ready_product_list = []
-                ready_goods_categ = product_category.sudo().search([('name', 'in', ['Ready Goods', 'Raw Materials'])])
+                ready_goods_categ = product_category.sudo().search(['|', ('name', 'ilike', 'Ready Goods'), ('name', 'ilike', 'Raw Materials')])
                 for ready_product in self.env['product.product'].sudo().search(
                         ['|', ('categ_id', 'in', ready_goods_categ.child_id.ids),
                          ('categ_id', 'in', ready_goods_categ.ids)]):
                     ready_product_list.append(ready_product.id)
-                print("ready goods", ready_product_list)
                 domain = {'domain': {'product_id': [('id', 'in', ready_product_list)]}}
                 return domain
 
             raw_product_list = []
-            raw_materials_categ = product_category.sudo().search([('name', '=', 'Raw Materials')])
+            raw_materials_categ = product_category.sudo().search(['|', ('name', '=', 'Raw Materials'), ('name', 'ilike', 'Raw Materials')])
             for raw_product in self.env['product.product'].sudo().search(
                     ['|', ('categ_id', 'in', raw_materials_categ.child_id.ids),
                      ('categ_id', 'in', raw_materials_categ.ids)]):
                 raw_product_list.append(raw_product.id)
-            print("ready goods", raw_product_list)
 
             domain = {'domain': {'product_id': [('id', 'in', raw_product_list)]}}
             return domain

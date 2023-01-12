@@ -181,7 +181,6 @@ class StockQuantInherit(models.Model):
         """
         self = self.sudo()
         rounding = product_id.uom_id.rounding
-        print("location_id", location_id)
 
         quants = self._gather(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id, strict=strict)
         reserved_quants = []

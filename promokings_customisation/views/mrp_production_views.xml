@@ -11,6 +11,7 @@
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="customisation_details" readonly="1"/>
+                <field name="customisation_type_ids" widget="many2many_tags" readonly="1"/>
             </xpath>
         </field>
     </record>

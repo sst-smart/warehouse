@@ -9,6 +9,8 @@ class MrpProduction(models.Model):
     _inherit = "mrp.production"
 
     customisation_details = fields.Char(string="Customisation Details")
+    customisation_type_ids = fields.Many2many('customisation.type', string='Customisation Type')
+
     branding_mo = fields.Boolean(string="Branding MO")
     partner_id = fields.Many2one('res.partner', string="Customer")
     sale_order_id = fields.Many2one('sale.order', string="Sale Order")
