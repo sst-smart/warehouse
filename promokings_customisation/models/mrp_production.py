@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from datetime import date
+from odoo.exceptions import UserError, ValidationError
 from dateutil.relativedelta import relativedelta
 
 
@@ -81,3 +82,43 @@ class MrpProduction(models.Model):
     # def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
     #     res = super(MrpProduction, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
     #     return res
+
+    def action_create_counterpart_transfer(self):
+        for record in self:
+            if record.picking_ids and record.delivery_count == 1:
+                picking = record.picking_ids.filtered(lambda x: x.state not in ['cancel'])
+                if picking:
+                    location_id = self.env['stock.location'].search([('name', '=', 'Ready Goods Stock')], limit=1)
+                    lines = [(5, 0, 0)]
+                    if record.move_raw_ids:
+                        for pick in record.move_raw_ids:
+                            line = (0, 0, {
+                                'name': '/',
+                                'product_id': pick.product_id.id,
+                                'product_uom': pick.product_uom.id,
+                                'product_uom_qty': pick.product_uom_qty,
+                                'location_id': location_id.id,
+                                'location_dest_id': pick.location_id.id,
+                            })
+                            lines.append(line)
+                        picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal'), ('name', '=', 'Pick Components')])
+                        pick_output = self.env['stock.picking'].create({
+                            'name': '/',
+                            'partner_id': False,
+                            'scheduled_date': picking.scheduled_date,
+                            'mrp_sale_order_id': record.sale_order_id.id or False,
+                            'picking_type_id': picking_type.id,
+                            'location_id': location_id.id,
+                            'location_dest_id': record.location_src_id.id,
+                            'origin': record.name,
+                            'move_lines': lines,
+                        })
+                        pick_output.group_id = picking.group_id.id
+                        pick_output.action_confirm()
+                        record.picking_ids = [(4, pick_output.id)]
+                    else:
+                        raise ValidationError(_("Please add components to create counter part transfer"))
+            else:
+                raise ValidationError(_("It will only work if manufacturing order have one transfer."))
+
+
