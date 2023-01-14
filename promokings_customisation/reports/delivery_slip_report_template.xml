@@ -69,26 +69,26 @@
                     <td style="width:25%;">
                         <strong>Total Ordered Quantity</strong>
                     </td>
-                    <t t-if="move_total_qty">
+                    <t>
                         <td class="text-right" style="width:23.25%;">
-                            <span t-esc="move_total_qty"/>
-                            <span t-esc="move_uom"/>
+                            <span t-esc="'%.2f'% o.total_ordered_qty()"/>
+                            <!-- <span t-esc="move_uom"/> -->
                         </td>
                     </t>
-                    <t t-else="">
+                    <!-- <t t-else="">
                         <td class="text-right" style="width:23.25%;">
                             <span t-esc="bo_line_total_qty"/>
                             <span t-esc="bo_line_uom"/>
                         </td>
-                    </t>
+                    </t> -->
                 </tr>
                 <tr class="border-black">
                     <td style="width:25%;">
                         <strong>Total Delivered Quantity</strong>
                     </td>
                     <td class="text-right" style="width:23.25%;">
-                        <span t-esc="move_total_qty_done"/>
-                        <span t-esc="move_uom"/>
+                        <span t-esc="'%.02f'% o.total_done_qty()"/>
+                        <!-- <span t-esc="move_uom"/> -->
                     </td>
                 </tr>
             </table>

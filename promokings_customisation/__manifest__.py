@@ -2,7 +2,7 @@
 
 {
     'name': "Promo Kings Customisation",
-    'version': '15.0.1.1.86',
+    'version': '15.0.1.1.87',
     'author': 'Pragmatic TechSoft Pvt Ltd.',
     'website': 'www.pragtech.co.in',
     'depends': ['base', 'sale_management', 'sale', 'purchase', 'stock', 'sale_stock', 'mrp', 'approvals', 'web', 'sales_team', 'stock_picking_invoice_link','web'],

@@ -14,6 +14,19 @@ class StockPicking(models.Model):
     is_mrp_picking = fields.Boolean('Mrp Picking', compute="_compute_partner_id_sale_order", store=True)
     mrp_sale_order_id = fields.Many2one('sale.order', string="Sale orders")
 
+    def total_ordered_qty(self):
+        total_ordered = 0.0
+        for rec in self.move_ids_without_package:
+            total_ordered += rec.product_uom_qty
+        return total_ordered
+
+    def total_done_qty(self):
+        total_done = 0.0
+        for rec in self.move_ids_without_package:
+            total_done += rec.quantity_done
+        return total_done
+
+
     def _compute_partner_id_sale_order(self):
         ctx = self.env.context
         for order in self:
