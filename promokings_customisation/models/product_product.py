@@ -33,6 +33,16 @@ class ProductProduct(models.Model):
                 supplier_lines.append(supplier_line)
             self.seller_ids = supplier_lines
 
+    @api.onchange('po_link_product_id')
+    def _onchange_link_product_id(self):
+        if self.po_link_product_id:
+            prod_id = self.po_link_product_id
+            self.po_link_product_id = False
+            self.mo_link_product_id = False
+            self.po_link_product_id = prod_id
+            self.mo_link_product_id = prod_id
+    
+    
     @api.model
     def default_get(self, fields):
         if self:

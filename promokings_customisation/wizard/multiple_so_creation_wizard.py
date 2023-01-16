@@ -68,6 +68,7 @@ class MultipleSOCreationWizard(models.TransientModel):
                     'product_id': so_line.product_id.id,
                     'qty_ordered': so_line.qty_ordered,
                     'qty_to_do': so_line.qty_to_do,
+                    'qty_to_next_action': so_line.qty_to_do,
                     'product_uom_id': so_line.product_uom_id.id,
                     'price_unit': so_line.price_unit,
                     'customise': so_line.customise,

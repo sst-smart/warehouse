@@ -418,6 +418,7 @@ class SONextActionLine(models.Model):
                     self.customisation_type_ids = existing_line[0].customisation_type_ids or so_line_id[0].customisation_type_ids
                     self.qty_ordered = existing_line[0].qty_ordered or parent_so_line_id[0].product_uom_qty
                     self.qty_to_do = existing_line[0].qty_to_do or so_line_id[0].product_uom_qty
+                    self.qty_to_next_action = existing_line[0].qty_to_do or so_line_id[0].product_uom_qty
                     self.art_work_image = existing_line[0].art_work_image or so_line_id[0].art_work_image
                 else:
                     self.customise = so_line_id[0].customise
@@ -425,6 +426,7 @@ class SONextActionLine(models.Model):
                     self.customisation_type_ids = so_line_id[0].customisation_type_ids
                     self.qty_ordered = parent_so_line_id[0].product_uom_qty
                     self.qty_to_do = so_line_id[0].product_uom_qty
+                    self.qty_to_next_action = so_line_id[0].product_uom_qty
                     self.art_work_image = so_line_id[0].art_work_image
 
         else:
