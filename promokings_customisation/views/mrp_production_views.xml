@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_inherit_promo_kings" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.promo.kings</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="partner_id" readonly="1"/>
+                <field name="sale_order_id" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="customisation_details" readonly="1"/>
+                <field name="customisation_type_ids" widget="many2many_tags" readonly="1"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button string="Create Counterpart Transfer" class="btn btn-primary"
+                            type="object" name="action_create_counterpart_transfer"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['confirmed']), ('delivery_count', '!=', 1)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
